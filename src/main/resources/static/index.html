@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>The Home page</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
+		<link rel="stylesheet" type="text/css" href="css/styles.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<!-- holds banner image -->
+		<div class="banner"></div>
+		
+		<h1 class="centerTitle">To Do Activity Tracker</h1>
+	<div class="container2">
+		<div class="container">
+			<a class="button3" onclick="saveActivity();" style="cursor= pointer"> Post new Activity</a>
+			<div>
+				<form>
+					<div class="omrs-input-group">
+						<label class="omrs-input-underlined">
+						  <input name="Activity_Name" id="Activity_Name">
+						  <span class="omrs-input-label">Name</span>
+						  <span class="omrs-input-helper">Activity to be Added</span>
+						 </label>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="container">
+			<a class="button3" onclick="deleteActivity();" style="cursor= pointer"> Delete ID</a>
+			<div>
+				<form>
+					<div class="omrs-input-group">
+						<label class="omrs-input-underlined">
+						  <input name="Delete_Activity" id="Delete_Activity">
+						  <span class="omrs-input-label">Name</span>
+						  <span class="omrs-input-helper">Activity to be Deleted</span>
+						 </label>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+		
+		<div class="container3">
+			<a class="button3" onclick="getAllActivity();" style="cursor= pointer" >FILL DATABASE</a>
+			<p id="responseData"></p>
+		</div>
+		
+		<script>
+			function getAllActivity(){
+				$.ajax({
+					url:"/returnAllToDo",
+					type:"POST",
+					dataType: 'json',
+					success: function(response){
+						console.log(response);
+						var concatResponse = response.join(', ');
+						$("#responseData").html(concatResponse);
+					}
+				})
+			}
+			
+			function saveActivity(){
+				if(!$("#Activity_Name").val()){
+					alert("You haven't entered a To do Activity...");
+				}
+				else
+				{
+					var newActivity = {
+							name: $("#Activity_Name").val()
+					};
+					
+					$.ajax({
+						type: "POST",
+						url:"/addToDo",
+						headers:{
+							"Content-Type":"application/json"
+						},
+						data: JSON.stringify(newActivity),
+						sucess:function(data){
+							console.log("POSTED API RESPONSE" + data);
+						}
+					})
+				}
+		}
+			function deleteActivity(){
+				if(!$("#Delete_Activity").val()){
+					alert("You haven't entered an Activity ID to delete...");
+				}
+				else
+				{
+					var jsonObject = {
+							name: $("#Delete_Activity").val()
+					}
+					
+					$.ajax({
+						type: "DELETE",
+						url:"/deleteToDo",
+						dataType: "json",
+						data: JSON.stringify(jsonObject),
+						headers:{
+							"Content-Type":"application/json"
+						},
+						sucess:function(data){
+							console.log("DELETED API RESPONSE" + data);
+						}
+					})
+				}
+		}
+			
+	</script>
+	</body>
+</html>
